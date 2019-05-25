@@ -15,7 +15,7 @@ module GemOutdatedChecker
 
     def outdated_gems
       bundle_outdated unless @execed
-      @outdated_gems ||= @o.split("\n").grep(/\*/)
+      @outdated_gems ||= @out.split("\n").grep(/\*/)
     end
 
     def update_required_gems
