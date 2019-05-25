@@ -7,20 +7,20 @@ RSpec.describe GemOutdatedChecker do
     context 'set configure' do
       before :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = %w(aws-sdk)
+          config.exclude_gems = %w(aws-sdk)
           config.bundle_path = "./bin/bundle"
         end
       end
       after :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = nil
+          config.exclude_gems = nil
           config.bundle_path = nil
         end
       end
 
       it 'return setting values' do
         instance = GemOutdatedChecker::GemList.new
-        expect(instance.instance_variable_get(:@update_exclude_gems)).to eq ["aws-sdk"]
+        expect(instance.instance_variable_get(:@exclude_gems)).to eq ["aws-sdk"]
         expect(instance.instance_variable_get(:@bundle_path)).to eq "./bin/bundle"
       end
     end
@@ -28,7 +28,7 @@ RSpec.describe GemOutdatedChecker do
     context 'no configure' do
       it 'return default values' do
         instance = GemOutdatedChecker::GemList.new
-        expect(instance.instance_variable_get(:@update_exclude_gems)).to eq []
+        expect(instance.instance_variable_get(:@exclude_gems)).to eq []
         expect(instance.instance_variable_get(:@bundle_path)).to eq "bundle"
       end
     end
@@ -83,7 +83,7 @@ EOS
 
       before :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = update_exclude_gems
+          config.exclude_gems = exclude_gems
         end
 
         allow(instance).to receive(:exec_command).and_return(capture3_result)
@@ -91,27 +91,27 @@ EOS
 
       after :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = nil
+          config.exclude_gems = nil
         end
       end
 
-      context 'update_exclude_gems exists' do
-        let(:update_exclude_gems) { %w(aws-sdk actionpack) }
+      context 'exclude_gems exists' do
+        let(:exclude_gems) { %w(aws-sdk actionpack) }
 
         it 'return outdated gem list excluding the gems set configure' do
           expect(instance.update_required_gems.size).to be 2
         end
       end
 
-      context 'update_exclude_gems empty' do
-        let(:update_exclude_gems) { nil }
+      context 'exclude_gems empty' do
+        let(:exclude_gems) { nil }
         it 'return all outdated gem list' do
           expect(instance.update_required_gems.size).to be 5
         end
       end
 
-      context 'update_exclude_gems exists but it is not on the oudated gem list' do
-        let(:update_exclude_gems) { %w(not-extist) }
+      context 'exclude_gems exists but it is not on the oudated gem list' do
+        let(:exclude_gems) { %w(not-extist) }
         it 'return all outdated gem list' do
           expect(instance.update_required_gems.size).to be 5
         end
@@ -123,7 +123,7 @@ EOS
 
       before :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = update_exclude_gems
+          config.exclude_gems = exclude_gems
         end
 
         allow(instance).to receive(:exec_command).and_return(capture3_result)
@@ -131,19 +131,19 @@ EOS
 
       after :each do
         GemOutdatedChecker::GemList.configure do |config|
-          config.update_exclude_gems = nil
+          config.exclude_gems = nil
         end
       end
 
-      context 'update_exclude_gems exists' do
-        let(:update_exclude_gems) { %w(actioncable unknown-gem) }
+      context 'exclude_gems exists' do
+        let(:exclude_gems) { %w(actioncable unknown-gem) }
         it 'return outdated gem list only the gems set configure' do
           expect(instance.update_pending_gems.size).to be 1
         end
       end
 
-      context 'update_exclude_gems empty' do
-        let(:update_exclude_gems) { nil }
+      context 'exclude_gems empty' do
+        let(:exclude_gems) { nil }
         it 'return empty list' do
           expect(instance.update_pending_gems.size).to be 0
         end

@@ -9,7 +9,7 @@ module GemOutdatedChecker
     extend Config
 
     def initialize
-      @update_exclude_gems = configs[:update_exclude_gems] || []
+      @exclude_gems = configs[:exclude_gems] || []
       @bundle_path = configs[:bundle_path] || 'bundle'.freeze
     end
 
@@ -19,10 +19,10 @@ module GemOutdatedChecker
     end
 
     def update_required_gems
-      return outdated_gems if @update_exclude_gems.empty?
+      return outdated_gems if @exclude_gems.empty?
 
       @update_required_gems ||= outdated_gems.reject do |gem_name|
-        @update_exclude_gems.any?{ |pg| gem_name =~ /#{pg}/ }
+        @exclude_gems.any?{ |pg| gem_name =~ /#{pg}/ }
       end
     end
 

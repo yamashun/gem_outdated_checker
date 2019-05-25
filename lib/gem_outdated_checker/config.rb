@@ -1,7 +1,7 @@
 module GemOutdatedChecker
   module Config
     CONFIG_KEYS = [
-      :update_exclude_gems,
+      :exclude_gems,
       :bundle_path,
     ]
 
