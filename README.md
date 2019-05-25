@@ -1,8 +1,6 @@
 # GemOutdatedChecker
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/gem_outdated_checker`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+GemOutdatedChecker is the gem to gets an array of outdated gems maintained by the bundler.
+The usage scenario assumes that batch processing will periodically retrieve outdated gems and notify you (For example, by slack or mail).
 
 ## Installation
 
@@ -22,22 +20,52 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "gem_outdated_checker"
 
-## Development
+GemOutdatedChecker::GemList.new.outdated_gems
+# => ["  * actioncable (newest 5.2.3, installed 5.1.5)",
+# "  * actionmailer (newest 5.2.3, installed 5.1.5)",
+# "  * actionpack (newest 5.2.3, installed 5.1.5)",
+# "  * actionview (newest 5.2.3, installed 5.1.5)",
+# "  * activemodel (newest 5.2.3, installed 5.1.5)",
+#      .
+#      .
+#      .
+# "  * yard (newest 0.9.19, installed 0.8.7.6)"]
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+If you want to exclude some gems from the target for some reason, add the target string to the config.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+GemOutdatedChecker::GemList.configure do |config|
+  config.exclude_gems = %w(actionpack actionview)
+end
 
-## Contributing
+GemOutdatedChecker::GemList.new.update_required_gems
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/gem_outdated_checker. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+### Public methods
+`GemOutdatedChecker::GemList` class has following three public methods.
+
+| public method | return gem list |
+----|----
+| outdated_gems | all outdated gems |
+| update_required_gems | outdated gems excluding `config.exclude_gems` |
+| pending_gems | outdated_gems - update_required_gems |
+
+### Bundle path
+
+GemOutdatedChecker exec `bundle outdated` to get outdated_gems gems.
+If you want to change the bundle path, the following configure enable:
+
+```ruby
+GemOutdatedChecker::GemList.configure do |config|
+  config.bundle_path = "./bin/bundle"
+end
+# => exec `./bin/bundle outdated` to get outdated_gems gems.
+```
 
 ## License
-
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-## Code of Conduct
-
-Everyone interacting in the GemOutdatedChecker project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/gem_outdated_checker/blob/master/CODE_OF_CONDUCT.md).
