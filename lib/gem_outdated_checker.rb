@@ -37,8 +37,14 @@ module GemOutdatedChecker
     end
 
     def bundle_outdated
-      @out, @err, @status = Open3.capture3("#{@bundle_path} outdated")
+      @out, @err, @status = exec_command
+      # TODO: Error handling
+      # @status: if any oudated_gem exitsts, return exit code 1
       @execed = true
+    end
+
+    def exec_command
+      Open3.capture3("#{@bundle_path} outdated")
     end
   end
 end
